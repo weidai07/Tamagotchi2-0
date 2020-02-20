@@ -1,19 +1,20 @@
 import React from 'react';
 import Header from './Header';
-import TamagotchiList from './TamagotchiControl';
-import NewTamagotchiControl from './NewTamagotchiControl';
+import NewTamagotchiForm from './NewTamagotchiForm';
 import Error404 from './Error404';
 import { Switch, Route } from 'react-router-dom';
+import { v4 } from 'uuid';
 import Moment from 'moment';
+import TamagotchiList from './TamagotchiList';
 
 class App extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      masterTamagotchiList: []
+      masterTamagotchi: {}
     };
-    this.handleAddingNewTamagotchiToList = this.handleAddingNewTamagotchiToList.bind(this);
+    this.handleAddingNewTamagotchi = this.handleAddingNewTamagotchi.bind(this);
   }
 
   componentDidMount() {
@@ -28,18 +29,20 @@ class App extends React.Component {
   }
 
   updateTamagotchiElapsedWaitTime() {
-    let newMasterTamagotchiList = this.state.masterTamagotchiList.slice();
-    newMasterTamagotchiList.forEach((tamagotchi) =>
-      tamagotchi.formattedWaitTime = (tamagotchi.timeOpen).fromNow(true)
-    );
-    this.setState({masterTamagotchiList: newMasterTamagotchiList});
+    var newMasterTamagotchi = Object.assign({}, this.state.masterTamagotchi);
+    Object.keys(newMasterTamagotchi).forEach(tamagotchiId => {
+      newMasterTamagotchi[tamagotchiId].formattedWaitTime = (newMasterTamagotchi[tamagotchiId].timeOpen).fromNow(true);
+    });
+    this.setState({masterTamagotchi: newMasterTamagotchi});
   }
 
-  handleAddingNewTamagotchiToList(newTamagotchi){
-    var newMasterTamagotchiList = this.state.masterTamagotchiList.slice();
-    newTamagotchi.formattedWaitTime = (newTamagotchi.timeOpen).fromNow(true);
-    newMasterTamagotchiList.push(newTamagotchi);
-    this.setState({masterTamagotchiList: newMasterTamagotchiList});
+  handleAddingNewTamagotchi(newTamagotchi){
+    var newTamagotchiId = v4();
+    var newMasterTamagotchi = Object.assign({}, this.state.masterTamagotchi, {
+      [newTamagotchiId]: newTamagotchi
+    });
+    newMasterTamagotchi[newTamagotchiId].formattedWaitTime = newMasterTamagotchi[newTamagotchiId].timeOpen.fromNow(true);
+    this.setState({masterTamagotchi: newMasterTamagotchi});
   }
 
   render(){
@@ -47,8 +50,8 @@ class App extends React.Component {
       <div>
         <Header/>
         <Switch>
-          <Route exact path='/' render={()=><TamagotchiList tamagotchiList={this.state.masterTamagotchiList} />} />
-          <Route path='/newtamagotchi' render={()=><NewTamagotchiControl onNewTamagotchiCreation={this.handleAddingNewTamagotchiToList} />} />
+          <Route exact path='/' render={()=><TamagotchiList tamagotchiList={this.state.masterTamagotchi} />} />
+          <Route path='/newtamagotchi' render={()=><NewTamagotchiForm onNewTamagotchiCreation={this.handleAddingNewTamagotchi} />} />
           <Route component={Error404} />
         </Switch>
       </div>
