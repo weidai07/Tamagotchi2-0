@@ -61,3 +61,5 @@ class App extends React.Component {
 }
 
 export default App;
+
+// .git log --graph
