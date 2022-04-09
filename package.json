@@ -10,7 +10,7 @@
     "start": "webpack-dev-server"
   },
   "dependencies": {
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
